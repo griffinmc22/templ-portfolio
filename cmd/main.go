@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"net/http"
+	"templ-portfolio/internal/templates"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	fs := http.FileServer(http.Dir("internal"))
+	http.Handle("/internal/", http.StripPrefix("/internal/", fs))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		templates.Hello("Bob").Render(r.Context(), w)
+	})
+	http.ListenAndServe("localhost:8080", nil)
 }
